@@ -7,10 +7,22 @@ export default function Scoreboard() {
 
   const fetchScores = async () => {
     try {
-      const { data } = await axios.get('/api/scores');
-      setScores(data);
-      setError('');
-    } catch (e) {
+      // Öncelik: birleşik endpoint
+      const res = await axios.get('/api/scores');
+      if (res.data && res.data.nfl && res.data.mlb) {
+        setScores(res.data);
+        setError('');
+      } else {
+        // fallback: ayrı endpointleri çağır
+        const [nflRes, mlbRes] = await Promise.all([
+          axios.get('/api/scores/nfl'),
+          axios.get('/api/scores/mlb'),
+        ]);
+        setScores({ nfl: nflRes.data, mlb: mlbRes.data });
+        setError('');
+      }
+    } catch (err) {
+      console.error("Failed to fetch scores", err);
       setError('Failed to load scores');
     }
   };
@@ -33,15 +45,4 @@ export default function Scoreboard() {
           <span>{game.status}</span>
         </div>
       ))}
-      <h2 className="text-xl font-bold mt-4 mb-2">MLB</h2>
-      {scores.mlb.map(game => (
-        <div key={game.id} className="mb-2">
-          {game.competitors.map(c => (
-            <span key={c.name} className="mr-2">{c.name}: {c.score}</span>
-          ))}
-          <span>{game.status}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
+      <h2 className="text-xl font-bold mt-4
