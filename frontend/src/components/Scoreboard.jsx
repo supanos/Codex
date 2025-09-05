@@ -3,10 +3,16 @@ import axios from 'axios';
 
 export default function Scoreboard() {
   const [scores, setScores] = useState({ nfl: [], mlb: [] });
+  const [error, setError] = useState('');
 
   const fetchScores = async () => {
-    const { data } = await axios.get('/api/scores');
-    setScores(data);
+    try {
+      const { data } = await axios.get('/api/scores');
+      setScores(data);
+      setError('');
+    } catch (e) {
+      setError('Failed to load scores');
+    }
   };
 
   useEffect(() => {
@@ -17,6 +23,7 @@ export default function Scoreboard() {
 
   return (
     <div className="text-white">
+      {error && <p className="text-red-500 mb-2">{error}</p>}
       <h2 className="text-xl font-bold mb-2">NFL</h2>
       {scores.nfl.map(game => (
         <div key={game.id} className="mb-2">

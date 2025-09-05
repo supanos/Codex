@@ -19,7 +19,8 @@ async function fetchScoreboard(url) {
 
 router.get('/nfl', async (_req, res) => {
   try {
-    const games = await fetchScoreboard('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard');
+    const date = new Date().toISOString().split('T')[0];
+    const games = await fetchScoreboard(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=${date}`);
     res.json(games);
   } catch (e) {
     res.status(500).json({ message: 'Failed to fetch scores' });
@@ -28,7 +29,8 @@ router.get('/nfl', async (_req, res) => {
 
 router.get('/mlb', async (_req, res) => {
   try {
-    const games = await fetchScoreboard('https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard');
+    const date = new Date().toISOString().split('T')[0];
+    const games = await fetchScoreboard(`https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard?dates=${date}`);
     res.json(games);
   } catch (e) {
     res.status(500).json({ message: 'Failed to fetch scores' });
@@ -37,9 +39,10 @@ router.get('/mlb', async (_req, res) => {
 
 router.get('/', async (_req, res) => {
   try {
+    const date = new Date().toISOString().split('T')[0];
     const [nfl, mlb] = await Promise.all([
-      fetchScoreboard('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard'),
-      fetchScoreboard('https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard'),
+      fetchScoreboard(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=${date}`),
+      fetchScoreboard(`https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard?dates=${date}`),
     ]);
     res.json({ nfl, mlb });
   } catch (e) {

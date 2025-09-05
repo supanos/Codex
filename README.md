@@ -20,7 +20,7 @@ docker compose run --rm backend npm run seed
 4. Visit `http://YOUR_SERVER_IP:3000` for the frontend. All API routes are served under `/api/*` and proxied through the frontend.
 
 ## Services
-- **frontend**: React app built with Vite and served via Nginx on port 80 (exposed as port 3000 on the host).
+- **frontend**: React app built with Vite and served via Nginx on port 3000.
 - **backend**: Express API on port 5000 with PostgreSQL storage.
 - **db**: PostgreSQL 15 with persistent volume `db-data`.
 
