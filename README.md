@@ -26,6 +26,7 @@ docker compose run --rm backend npm run seed
 
 ## Features
 - Live NFL & MLB scores fetched from ESPN.
+- Scoreboard auto-refreshes every 60 seconds.
 - Admin login with JWT and events CRUD endpoints (default user: `admin/admin123`).
 - Contact and reservation routes.
 - Landing page and banner settings stored in the database.
