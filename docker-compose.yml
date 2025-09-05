@@ -27,6 +27,8 @@ services:
 
   frontend:
     build: ./frontend
+    environment:
+      VITE_API_BASE: /api
     depends_on:
       - backend
     ports:
