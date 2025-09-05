@@ -17,19 +17,24 @@ async function fetchScoreboard(url) {
   }));
 }
 
-// Separate endpoints
+// NFL endpoint
 router.get('/nfl', async (_req, res) => {
   try {
-    const games = await fetchScoreboard('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard');
+    const games = await fetchScoreboard(
+      'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard'
+    );
     res.json(games);
   } catch (e) {
     res.status(500).json({ message: 'Failed to fetch NFL scores' });
   }
 });
 
+// MLB endpoint
 router.get('/mlb', async (_req, res) => {
   try {
-    const games = await fetchScoreboard('https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard');
+    const games = await fetchScoreboard(
+      'https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard'
+    );
     res.json(games);
   } catch (e) {
     res.status(500).json({ message: 'Failed to fetch MLB scores' });
@@ -39,8 +44,14 @@ router.get('/mlb', async (_req, res) => {
 // Combined endpoint
 router.get('/', async (_req, res) => {
   try {
-    const nfl = await fetchScoreboard('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard');
-    const mlb = await fetchScoreboard('https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard');
+    const [nfl, mlb] = await Promise.all([
+      fetchScoreboard(
+        'https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard'
+      ),
+      fetchScoreboard(
+        'https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard'
+      ),
+    ]);
     res.json({ nfl, mlb });
   } catch (e) {
     res.status(500).json({ message: 'Failed to fetch scores' });

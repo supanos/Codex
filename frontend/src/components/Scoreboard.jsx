@@ -3,6 +3,7 @@ import axios from 'axios';
 
 export default function Scoreboard() {
   const [scores, setScores] = useState({ nfl: [], mlb: [] });
+  const [error, setError] = useState('');
 
   const fetchScores = async () => {
     try {
@@ -10,6 +11,7 @@ export default function Scoreboard() {
       const res = await axios.get('/api/scores');
       if (res.data && res.data.nfl && res.data.mlb) {
         setScores(res.data);
+        setError('');
       } else {
         // fallback: ayrı endpointleri çağır
         const [nflRes, mlbRes] = await Promise.all([
@@ -17,9 +19,11 @@ export default function Scoreboard() {
           axios.get('/api/scores/mlb'),
         ]);
         setScores({ nfl: nflRes.data, mlb: mlbRes.data });
+        setError('');
       }
     } catch (err) {
       console.error("Failed to fetch scores", err);
+      setError('Failed to load scores');
     }
   };
 
@@ -31,6 +35,7 @@ export default function Scoreboard() {
 
   return (
     <div className="text-white">
+      {error && <p className="text-red-500 mb-2">{error}</p>}
       <h2 className="text-xl font-bold mb-2">NFL</h2>
       {scores.nfl.map(game => (
         <div key={game.id} className="mb-2">
@@ -40,15 +45,4 @@ export default function Scoreboard() {
           <span>{game.status}</span>
         </div>
       ))}
-      <h2 className="text-xl font-bold mt-4 mb-2">MLB</h2>
-      {scores.mlb.map(game => (
-        <div key={game.id} className="mb-2">
-          {game.competitors.map(c => (
-            <span key={c.name} className="mr-2">{c.name}: {c.score}</span>
-          ))}
-          <span>{game.status}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
+      <h2 className="text-xl font-bold mt-4
