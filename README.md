@@ -1,19 +1,12 @@
 # Supono's Sports Bar
 
-Full-stack web application for a sports bar built with React, Express and PostgreSQL. Includes live NFL/MLB scores, events and specials management and contact form.
+Full-stack web application for a sports bar built with React, Express and PostgreSQL.  
+Provides live NFL and MLB scores, events management, specials, contact form, and a landing page toggle.
 
-## Development
+## Deployment
+
+1. Copy `.env.example` to `.env` and adjust values if needed.
+2. Build and start the stack:
 
 ```bash
-docker compose up --build
-```
-
-Frontend: http://localhost:3000
-Backend API: http://localhost:5000
-
-Seed admin user `admin` / `admin123` is created automatically.
-
-## Environment variables
-
-Copy `.env.example` to `.env` and adjust values.
-
+docker compose up -d --build

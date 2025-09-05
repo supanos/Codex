@@ -5,8 +5,22 @@ export default function Scoreboard() {
   const [scores, setScores] = useState({ nfl: [], mlb: [] });
 
   const fetchScores = async () => {
-    const res = await axios.get('/api/scores');
-    setScores(res.data);
+    try {
+      // Öncelik: birleşik endpoint
+      const res = await axios.get('/api/scores');
+      if (res.data && res.data.nfl && res.data.mlb) {
+        setScores(res.data);
+      } else {
+        // fallback: ayrı endpointleri çağır
+        const [nflRes, mlbRes] = await Promise.all([
+          axios.get('/api/scores/nfl'),
+          axios.get('/api/scores/mlb'),
+        ]);
+        setScores({ nfl: nflRes.data, mlb: mlbRes.data });
+      }
+    } catch (err) {
+      console.error("Failed to fetch scores", err);
+    }
   };
 
   useEffect(() => {
