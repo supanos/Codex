@@ -1,36 +1,50 @@
 version: '3.9'
+
 services:
   db:
     image: postgres:15
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build: ./backend
+    restart: unless-stopped
     environment:
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      # Prisma ve çoğu client ile uyumlu prefix
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       JWT_SECRET: ${JWT_SECRET}
       SMTP_HOST: ${SMTP_HOST}
       SMTP_PORT: ${SMTP_PORT}
       SMTP_USER: ${SMTP_USER}
       SMTP_PASS: ${SMTP_PASS}
       CONTACT_EMAIL: ${CONTACT_EMAIL}
+      NODE_ENV: production
+      PORT: 5000
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - "5000:5000"
 
   frontend:
     build: ./frontend
+    restart: unless-stopped
     depends_on:
       - backend
     ports:
-      - "3000:3000"
+      # Nginx içinde 80 dinliyorsa bu doğru eşleşme.
+      # Eğer container içinde 3000 dinliyorsa "3000:3000" yap.
+      - "3000:80"
 
 volumes:
   db-data:
