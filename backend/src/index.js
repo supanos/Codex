@@ -11,6 +11,10 @@ app.use(express.json());
 app.use(logger);
 app.use('/public', express.static(path.join(__dirname, '../public')));
 
+app.get('/api/health', (_req, res) => {
+  res.json({ status: 'ok' });
+});
+
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/events', require('./routes/events'));
 app.use('/api/specials', require('./routes/specials'));
